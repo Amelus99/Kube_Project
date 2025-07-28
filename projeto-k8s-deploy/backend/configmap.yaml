@@ -1,13 +1,21 @@
-# backend/configmap.yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: backend-config
-  namespace: app
-data:
-  DB_HOST: "postgres.db.svc.cluster.local"
-  DB_PORT: "5432"
-  DB_NAME: "mensagensdb"
-  API_HOST: "0.0.0.0"
-  API_PORT: "5000"
+#Este ConfigMap armazena parâmetros de configuração não sensíveis do backend Flask, como host/porta do banco e da API.
+#Permite manter a imagem Docker genérica, sem embutir parâmetros específicos de ambiente.
+#Facilita mudanças de ambiente (dev/staging/prod) sem rebuild da imagem.
 
+apiVersion: v1  # Versão da API usada para recursos nativos como ConfigMap.
+kind: ConfigMap  # Tipo de recurso. ConfigMap armazena dados de configuração não sensíveis.
+metadata:
+  name: backend-config  # Nome do ConfigMap.
+  namespace: app  # Namespace onde está alocado, isolando seu escopo à aplicação backend.
+
+data:  # Dados em pares chave-valor, que serão usados como variáveis de ambiente.
+  DB_HOST: "postgres.db.svc.cluster.local"  # Endereço interno DNS do serviço PostgreSQL no cluster.
+  DB_PORT: "5432"  # Porta padrão do PostgreSQL.
+  DB_NAME: "mensagensdb"  # Nome do banco de dados que a aplicação irá acessar.
+  API_HOST: "0.0.0.0"  # IP de binding para o backend aceitar conexões de fora do container.
+  API_PORT: "5000"  # Porta na qual a API será exposta dentro do container.
+
+#Por que não misturar Secrets no ConfigMap?
+#Segurança: ConfigMap é armazenado em texto claro, e qualquer usuário com acesso ao cluster pode ler seu conteúdo sem restrições.
+#Boas práticas Kubernetes: Senhas devem ser isoladas e gerenciadas separadamente, com controle de acesso.
+#Auditoria: Fica mais claro identificar e restringir quem acessa dados críticos.
