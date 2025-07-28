@@ -1,7 +1,6 @@
 # Esses dois Namespaces separam logicamente os recursos da aplicação e da base de dados, 
 #seguindo boas práticas de isolamento no cluster Kubernetes.
 
-
 apiVersion: v1                     # Define a versão da API utilizada para o recurso Namespace.
 kind: Namespace                   # Especifica que o recurso a ser criado é do tipo Namespace.
 metadata:
