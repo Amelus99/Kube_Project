@@ -1,5 +1,5 @@
 # O Ingress no Kubernetes serve para expor serviços HTTP e HTTPS externos ao cluster de forma controlada e flexível, 
-# funcionando como um roteador de tráfego de entrada baseado em regras de host e caminho (path).
+#funcionando como um roteador de tráfego de entrada baseado em regras de host e caminho (path).
 
 apiVersion: networking.k8s.io/v1             # Define a versão da API usada para o recurso Ingress.
 kind: Ingress                                # Especifica que o tipo de recurso é um Ingress.
