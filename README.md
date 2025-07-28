@@ -78,7 +78,7 @@ Realizar o deploy de uma aplicação web fullstack (React no frontend, Flask no 
       kubectl apply -f "$f"
     done
     
- **Inspeção de Recursos**
+## Inspeção de Recursos
 
     kubectl get pods -n app
     Lista todos os Pods no namespace app. Útil para verificar status (Running, CrashLoopBackOff) e identificar instâncias em execução.
