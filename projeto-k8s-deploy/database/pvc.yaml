@@ -1,12 +1,17 @@
-apiVersion: v1
-kind: PersistentVolumeClaim
+#O PersistentVolumeClaim é usado para prover armazenamento persistente ao container do PostgreSQL. Sua função é garantir que:
+#Os dados do banco não sejam perdidos mesmo que o pod do banco seja reiniciado ou realocado.
+#O StatefulSet do PostgreSQL tenha um volume dedicado onde o banco possa armazenar os dados em /var/lib/postgresql/data
+#A persistência seja tratada como um recurso separado, permitindo flexibilidade para trocar de armazenamento (EBS, Ceph, hostPath, etc.) sem alterar a lógica da aplicação.
+
+apiVersion: v1                         # Versão da API do Kubernetes para objetos básicos.
+kind: PersistentVolumeClaim            # Tipo do recurso. Um PVC é uma "requisição de volume persistente".
 metadata:
-  name: postgres-pvc
-  namespace: db
-spec:
+  name: postgres-pvc                   # Nome do PVC. Será usado para referenciar esse volume.
+  namespace: db                        # Namespace onde o PVC será criado (mesmo do banco de dados).
+
+spec:                                  # Especificações do PVC.
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteOnce                    # Define que apenas um pod pode montar esse volume para leitura e escrita ao mesmo tempo.
   resources:
     requests:
-      storage: 1Gi
-
+      storage: 1Gi                     # Quantidade de armazenamento solicitada: 1 gigabyte.
