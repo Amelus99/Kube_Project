@@ -42,22 +42,48 @@ Realizar o deploy de uma aplicação web fullstack (React no frontend, Flask no 
 - PVC (PersistentVolumeClaim)
 ##
 ## 4. Passos para aplicar os arquivos
-**1. Inicie o cluster Kubernetes:**
+**1. Limpar ambiente (opcional, antes de um novo deploy):**
 
-    minikube start
+    **Apaga tudo do Minikube e Docker**
+    minikube delete --all --purge
+    kubectl delete all --all -n app-database
+    kubectl delete all --all -n app-frontend-backend
+    docker system prune -a --volumes
+
+**2. Iniciar Minikube com configuração ideal:**
+
+       **Iniciar Minikube com 4 CPUs e 8GB de RAM (driver Docker)**
+    minikube start --cpus=4 --memory=8192 --driver=docker
+    
+    **Ativar o Ingress Controller**
     minikube addons enable ingress
-**2. Crie os namespaces:**
+    
+    **(Opcional) especificar versão do Kubernetes**
+    minikube start --kubernetes-version=v1.28.3 --driver=docker
+    
+    **Verificar status do cluster**
+    minikube status
 
-    kubectl apply -f namespace.yaml
 **3. Aplique os manifests:**
 
     kubectl apply -f database/ -n db
     kubectl apply -f backend/ -n app
     kubectl apply -f frontend/ -n app
     kubectl apply -f ingress/ -n app
-**4. Verifique o IP de acesso:**
+**4. Aplicar Namespaces e YAMLs:**
 
-    minikube ip
+    **Aplicar os namespaces primeiro**
+    kubectl apply -f namespace.yaml
+    
+    **Aplicar todos os arquivos YAML do projeto**
+    for f in namespace.yaml \
+             database/*.yaml \
+             backend/*.yaml \
+             frontend/*.yaml \
+             ingress/*.yaml; do
+      kubectl apply -f "$f"
+    done
+
 ##
 ## 5. Endereço de Acesso Esperado via Ingress
 A aplicação será acessível através do IP retornado pelo comando minikube ip. As rotas são:
