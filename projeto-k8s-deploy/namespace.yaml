@@ -1,10 +1,11 @@
-apiVersion: v1
-kind: Namespace
+apiVersion: v1                     # Define a versão da API utilizada para o recurso Namespace.
+kind: Namespace                   # Especifica que o recurso a ser criado é do tipo Namespace.
 metadata:
-  name: app
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: db
+  name: app                       # Nome do Namespace destinado à aplicação (frontend/backend).
 
+---
+apiVersion: v1                     # Segunda definição de recurso, também do tipo Namespace.
+kind: Namespace
+metadata:
+  name: db                        # Nome do Namespace destinado ao banco de dados.
+# Esses dois Namespaces separam logicamente os recursos da aplicação e da base de dados, seguindo boas práticas de isolamento no cluster Kubernetes.
