@@ -19,3 +19,4 @@ data:  # Dados em pares chave-valor, que serão usados como variáveis de ambien
 #Segurança: ConfigMap é armazenado em texto claro, e qualquer usuário com acesso ao cluster pode ler seu conteúdo sem restrições.
 #Boas práticas Kubernetes: Senhas devem ser isoladas e gerenciadas separadamente, com controle de acesso.
 #Auditoria: Fica mais claro identificar e restringir quem acessa dados críticos.
+###################ConfigMap não suporta codificação em Base64 nativamente nem tem finalidade de armazenar dados sensíveis.################
