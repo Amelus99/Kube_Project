@@ -17,19 +17,32 @@ Realizar o deploy de uma aplicação web fullstack (React no frontend, Flask no 
 ##
 ## 2. Estrutura do Projeto
     projeto-k8s-deploy/
-    ├── README.md
-    ├── frontend/
-    │   └── deployment.yaml
-    ├── backend/
-    │   ├── deployment.yaml
-    │   └── configmap.yaml
-    ├── database/
-    │   ├── statefulset.yaml
-    │   ├── pvc.yaml
-    │   └── secret.yaml
-    ├── ingress/
-    │   └── ingress.yaml
-    └── namespace.yaml
+    │
+    ├── namespace.yaml                        # Definição dos namespaces utilizados no cluster
+    ├── README.md                             # Instruções de deploy, uso e observações técnicas
+    │
+    ├── backend/                              # Manifests do backend (Flask API)
+    │   ├── configmap.yaml                    # Variáveis de ambiente (.env)
+    │   ├── deployment.yaml                   # Deployment do backend
+    │   ├── secret.yaml                       # Credenciais sensíveis (DB, API keys, etc.)
+    │   └── service.yaml                      # Service do backend (tipo ClusterIP)
+    │
+    ├── database/                             # Manifests do banco de dados PostgreSQL
+    │   ├── pvc.yaml                          # Volume persistente (1Gi+)
+    │   ├── secret.yaml                       # Senha e configs sensíveis do banco
+    │   ├── service.yaml                      # Service para expor o PostgreSQL
+    │   └── statefulset.yaml                  # StatefulSet para garantir identidade e persistência
+    │
+    ├── frontend/                             # Manifests do frontend (React/Vite)
+    │   └── deployment.yaml                   # Deployment do frontend
+    │
+    ├── ingress/                              # Regras de entrada HTTP/HTTPS
+    │   └── ingress.yaml                      # Definição do host/path (ex: meuprojeto.local/api)
+    │
+    └── debug/                                # Pods utilitários para troubleshooting
+        ├── degug-pod.yaml                    # Pod para testes básicos (shell)
+        ├── dnsutils.yaml                     # Ferramentas DNS (dig, nslookup)
+        └── netshoot.yaml                     # Ferramentas de rede (curl, ping, tcpdump etc)
 ##
 ## 3. Tecnologias Utilizadas
 - Kubernetes (Minikube ou Kind)
