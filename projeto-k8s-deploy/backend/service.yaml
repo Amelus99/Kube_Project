@@ -1,12 +1,19 @@
-apiVersion: v1
-kind: Service
+#Este Service atua como ponto de acesso estável para o backend (Flask API), dentro do cluster Kubernetes. Ele é essencial para:
+#Permitir que o frontend ou outros serviços consigam se comunicar com o backend via nome DNS (http://backend:5000).
+#Balancear a carga automaticamente entre múltiplas réplicas do pod do backend (se houver).
+#Isolar e controlar o acesso à API, limitando ao escopo do cluster se necessário.
+
+apiVersion: v1  # Define a versão da API do Kubernetes usada para criar o objeto Service.
+kind: Service  # Tipo do recurso. Aqui estamos criando um Service para expor o backend.
 metadata:
-  name: backend
-  namespace: app
+  name: backend  # Nome do Service. Esse nome será usado para comunicação interna (DNS: 'backend.app.svc.cluster.local').
+  namespace: app  # Namespace onde o Service será criado, agrupando os recursos da aplicação.
+
 spec:
   ports:
-    - port: 5000
-      targetPort: 5000
+    - port: 5000  # Porta exposta pelo Service dentro do cluster.
+      targetPort: 5000  # Porta que o container escuta (dentro do pod).
   selector:
-    app: backend
+    app: backend  # Seleciona os pods que têm o label "app=backend". O tráfego será roteado para esses pods.
 
+    #################Ele não expõe externamente o backend — isso é feito via Ingress.###################
