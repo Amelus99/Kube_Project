@@ -1,30 +1,29 @@
-apiVersion: networking.k8s.io/v1
-kind: Ingress
+apiVersion: networking.k8s.io/v1             # Define a versão da API usada para o recurso Ingress.
+kind: Ingress                                # Especifica que o tipo de recurso é um Ingress.
 metadata:
-  name: app-ingress
-  namespace: app
+  name: app-ingress                          # Nome do recurso Ingress.
+  namespace: app                             # Namespace onde o Ingress será criado.
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: nginx       # Indica que esse Ingress será gerenciado pelo Ingress Controller do tipo NGINX.
+
 spec:
   rules:
-    - host: meuprojeto.local
+    - host: meuprojeto.local                 # Define o host que será interceptado por este Ingress. Requer entrada no /etc/hosts no ambiente local.
+
       http:
         paths:
-          # -> qualquer /api/* é passado INTEIRO para o backend
-          - path: /api
-            pathType: Prefix
+          - path: /api                       # Qualquer requisição iniciando com /api será redirecionada para o backend.
+            pathType: Prefix                 # 'Prefix' indica que qualquer URL que comece com /api será encaminhada.
             backend:
               service:
-                name: backend
+                name: backend                # Nome do serviço Kubernetes que receberá as requisições (serviço do backend).
                 port:
-                  number: 5000
+                  number: 5000               # Porta exposta pelo serviço do backend.
 
-          # -> tudo o mais (/, /assets, index.html) vai para o frontend
-          - path: /
-            pathType: Prefix
+          - path: /                          # Todas as outras rotas (/, /index.html, /assets, etc.) serão tratadas pelo frontend.
+            pathType: Prefix                 # 'Prefix' para capturar qualquer caminho restante.
             backend:
               service:
-                name: frontend
+                name: frontend               # Nome do serviço do frontend.
                 port:
-                  number: 80
-
+                  number: 80                 # Porta exposta pelo serviço do frontend (geralmente porta HTTP padrão).
