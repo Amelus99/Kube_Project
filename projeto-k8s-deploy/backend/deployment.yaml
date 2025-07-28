@@ -1,62 +1,66 @@
-apiVersion: apps/v1
-kind: Deployment
+#Deployment: Garante que sempre haja 2 réplicas do backend rodando no namespace app, permitindo atualização controlada e escalabilidade.
+#InitContainer: Executa comandos antes do backend subir, garantindo que o banco de dados mensagensdb exista, evitando erros de conexão.
+#Containers: Executa o backend propriamente dito, carregando configurações do ConfigMap e segredos do Secret via variáveis de ambiente.
+#Uso de ConfigMap e Secret: Separa configurações padrão (hosts, portas) das credenciais sensíveis (usuário e senha).
+
+apiVersion: apps/v1                # Versão da API para objetos do tipo apps, aqui especificando um Deployment
+kind: Deployment                 # Tipo do objeto Kubernetes: Deployment (gerencia réplicas de Pods)
 metadata:
-  name: backend
-  namespace: app
+  name: backend                  # Nome do Deployment, usado para identificação no namespace
+  namespace: app                 # Namespace onde o Deployment será criado, separação lógica de recursos
 spec:
-  replicas: 2
+  replicas: 2                   # Quantidade desejada de réplicas (Pods) a serem mantidas ativas
   selector:
-    matchLabels:
-      app: backend
-  template:
+    matchLabels:                # Critério de seleção dos Pods gerenciados por este Deployment
+      app: backend              # Seleciona pods que possuem o label 'app: backend'
+  template:                    # Template para os Pods gerados por este Deployment
     metadata:
       labels:
-        app: backend
+        app: backend            # Labels aplicados aos Pods, importante para selector e serviços
     spec:
-      initContainers:
-        - name: init-db
-          image: postgres:15
-          env:
+      initContainers:          # Containers que executam antes do container principal, para preparar o ambiente
+        - name: init-db         # Nome do initContainer responsável por inicializar o banco ou preparar dados
+          image: postgres:15   # Imagem Docker do Postgres para execução das verificações e comandos SQL
+          env:                 # Variáveis de ambiente passadas para o initContainer
             - name: DB_HOST
               valueFrom:
                 configMapKeyRef:
-                  name: backend-config
+                  name: backend-config    # Puxa variável DB_HOST do ConfigMap backend-config
                   key: DB_HOST
             - name: DB_PORT
               valueFrom:
                 configMapKeyRef:
-                  name: backend-config
+                  name: backend-config    # Puxa variável DB_PORT do ConfigMap backend-config
                   key: DB_PORT
             - name: DB_USER
               valueFrom:
                 secretKeyRef:
-                  name: backend-secrets
+                  name: backend-secrets   # Puxa variável DB_USER do Secret backend-secrets (dado sensível)
                   key: DB_USER
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: backend-secrets
+                  name: backend-secrets   # Puxa variável DB_PASSWORD do Secret backend-secrets (senha)
                   key: DB_PASSWORD
-          command:
+          command:               # Comandos executados pelo initContainer na inicialização
             - sh
             - -c
             - |
               until pg_isready -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER"; do
-                echo "Aguardando PostgreSQL..."
+                echo "Aguardando PostgreSQL..."  # Aguarda o banco ficar pronto para conexões
                 sleep 2
               done
               PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -d postgres -tc \
-                "SELECT 1 FROM pg_database WHERE datname='mensagensdb'" \
+                "SELECT 1 FROM pg_database WHERE datname='mensagensdb'" \  # Verifica se o banco 'mensagensdb' existe
                 | grep -q 1 || PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -U "$DB_USER" -d postgres \
-                -c "CREATE DATABASE mensagensdb"
-      containers:
+                -c "CREATE DATABASE mensagensdb"   # Caso não exista, cria o banco mensagensdb
+      containers:               # Containers principais do Pod, onde roda a aplicação backend
         - name: backend
-          image: amelus99/backend:latest
+          image: amelus99/backend:latest  # Imagem do backend da aplicação, pronta para rodar a API
           ports:
-            - containerPort: 5000
+            - containerPort: 5000          # Porta exposta pelo container para comunicação interna (API)
           envFrom:
             - configMapRef:
-                name: backend-config
+                name: backend-config       # Injeta variáveis do ConfigMap backend-config no container
             - secretRef:
-                name: backend-secrets
-
+                name: backend-secrets      # Injeta variáveis sensíveis do Secret backend-secrets
