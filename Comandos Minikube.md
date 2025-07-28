@@ -1,5 +1,5 @@
 Limpa tudo
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 minikube delete --all --purge
 kubectl delete all --all -n app-database
 kubectl delete all --all -n app-frontend-backend
@@ -7,7 +7,7 @@ docker system prune -a --volumes
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Inicia
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 minikube start --cpus=4 --memory=8192 --driver=docker
 minikube status
 minikube addons enable ingress
@@ -16,7 +16,7 @@ minikube start --kubernetes-version=v1.28.3 --driver=docker
 
 
 Roda todos os YAMLs
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+
 for f in namespace.yaml \
          database/*.yaml \
          backend/*.yaml \
