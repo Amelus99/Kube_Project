@@ -1,35 +1,54 @@
+#  O frontend, neste projeto, é o cliente da aplicação, ou seja, 
+# a interface gráfica com a qual o usuário interage diretamente via navegador. 
+# Ele consome os dados da API do backend e apresenta esses dados visualmente.
+
+# Define a versão da API para recursos do tipo Deployment
 apiVersion: apps/v1
+
+# Tipo de objeto do Kubernetes
 kind: Deployment
+
+# Metadados de identificação
 metadata:
-  name: frontend
-  namespace: app
+  name: frontend         # Nome do Deployment
+  namespace: app         # Namespace onde será implantado
+
 spec:
-  replicas: 2
-  selector:
+  replicas: 2            # Quantidade de réplicas (pods) desejadas
+  selector:              # Define o rótulo que será usado para associar os pods
     matchLabels:
-      app: frontend
-  template:
+      app: frontend      # O Deployment vai gerenciar pods com este label
+
+  template:              # Template do pod a ser criado
     metadata:
       labels:
-        app: frontend
+        app: frontend    # Define o label do pod (deve bater com o selector)
+
     spec:
       containers:
-        - name: frontend
-          image: amelus99/frontend:latest
+        - name: frontend                 # Nome do container (interno)
+          image: amelus99/frontend:latest  # Imagem Docker publicada no Docker Hub
           ports:
-            - containerPort: 80
+            - containerPort: 80          # Porta exposta dentro do container
           env:
-            - name: VITE_API_URL
-              value: "http://backend:5000"
+            - name: VITE_API_URL         # Variável de ambiente usada pelo app React
+              value: "http://backend:5000" # URL interna do backend via Service
+
 ---
+# Versão da API para recursos do tipo Service
 apiVersion: v1
+
+# Tipo de objeto do Kubernetes
 kind: Service
+
 metadata:
-  name: frontend
-  namespace: app
+  name: frontend         # Nome do Service (será usado pelo Ingress ou outros pods)
+  namespace: app         # Namespace onde está o Service
+
 spec:
   ports:
-    - port: 80
+    - port: 80           # Porta de entrada do Service (mesma usada no container)
   selector:
-    app: frontend
+    app: frontend        # Vincula este Service aos pods que tenham esse label
+
 
