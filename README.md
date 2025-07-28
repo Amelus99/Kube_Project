@@ -44,7 +44,7 @@ Realizar o deploy de uma aplicação web fullstack (React no frontend, Flask no 
 ## 4. Passos para aplicar os arquivos
 **1. Limpar ambiente (opcional, antes de um novo deploy):**
 
-    **Apaga tudo do Minikube e Docker**
+    Apaga tudo do Minikube e Docker
     minikube delete --all --purge
     kubectl delete all --all -n app-database
     kubectl delete all --all -n app-frontend-backend
@@ -52,25 +52,19 @@ Realizar o deploy de uma aplicação web fullstack (React no frontend, Flask no 
 
 **2. Iniciar Minikube com configuração ideal:**
 
-       **Iniciar Minikube com 4 CPUs e 8GB de RAM (driver Docker)**
+    Iniciar Minikube com 4 CPUs e 8GB de RAM (driver Docker)
     minikube start --cpus=4 --memory=8192 --driver=docker
     
-    **Ativar o Ingress Controller**
+    Ativar o Ingress Controller
     minikube addons enable ingress
     
-    **(Opcional) especificar versão do Kubernetes**
+    (Opcional) especificar versão do Kubernetes
     minikube start --kubernetes-version=v1.28.3 --driver=docker
     
-    **Verificar status do cluster**
+    Verificar status do cluster
     minikube status
 
-**3. Aplique os manifests:**
-
-    kubectl apply -f database/ -n db
-    kubectl apply -f backend/ -n app
-    kubectl apply -f frontend/ -n app
-    kubectl apply -f ingress/ -n app
-**4. Aplicar Namespaces e YAMLs:**
+**3.Aplicar Namespaces e YAMLs:**
 
     **Aplicar os namespaces primeiro**
     kubectl apply -f namespace.yaml
@@ -83,6 +77,71 @@ Realizar o deploy de uma aplicação web fullstack (React no frontend, Flask no 
              ingress/*.yaml; do
       kubectl apply -f "$f"
     done
+    
+ **Inspeção de Recursos**
+
+    kubectl get pods -n app
+    Lista todos os Pods no namespace app. Útil para verificar status (Running, CrashLoopBackOff) e identificar instâncias em execução.
+    
+    
+    kubectl get svc -n app
+    Exibe os Services do namespace app. Permite ver IP interno (ClusterIP), portas e mapeamentos para os Pods.
+    
+    
+    kubectl get pods -A
+    Lista todos os Pods de todos os namespaces. Excelente para auditorias e diagnósticos amplos, como erros no kube-system.
+    
+    
+    kubectl get deployments -n app
+    Mostra os Deployments no namespace app, comparando réplicas desejadas e ativas — ideal para identificar falhas de rollout.
+
+**📜 Logs e Diagnóstico**
+
+    kubectl logs deployment/backend -n app
+    Consolida os logs dos Pods gerenciados pelo Deployment backend. Útil para diagnóstico unificado.
+    
+    
+    kubectl logs <podname> -n app
+    Retorna os logs de um Pod específico. Ajuda a rastrear falhas pontuais ou mensagens de erro.
+
+**🔁 Atualização de Deployments**
+
+    kubectl rollout restart deployment backend -n app
+    kubectl rollout restart deployment frontend -n app
+    Realiza um rolling restart dos Deployments, aplicando novas variáveis ou imagens. Não há downtime perceptível.
+
+**🔎 Debug Detalhado**
+
+    kubectl describe pod <podname> -n app
+    Exibe detalhes completos do Pod, incluindo eventos, node, variáveis, volumes e probes.
+    
+    
+    kubectl exec -it <podname> -n app -- /bin/sh
+    Abre um shell interativo no contêiner. Permite depuração manual e execução de comandos como curl, ping, psql, etc.
+
+**🌐 Testes Internos de Conectividade**
+
+    kubectl exec -n app -it <podname> -- curl http://backend:5000/api/mensagens
+    Verifica conectividade de um Pod para o serviço backend. Simula uma chamada de API dentro do cluster.
+    
+    
+    kubectl exec <podname> -n app -- curl -s -o /dev/null -w "%{http_code}" http://localhost:5000/api/mensagens
+    Testa apenas o código de status HTTP. Muito usado em scripts de readiness e health checks.
+
+**⚡ Comando Dinâmico**
+
+    kubectl exec -it $(kubectl get pod -n app -l app=backend -o jsonpath='{.items[0].metadata.name}') -n app -- sh
+    Executa sh automaticamente no primeiro Pod com o label app=backend. Evita precisar copiar o nome do Pod manualmente.
+
+**🔌 Acesso Local à API sem Ingress**
+
+    kubectl port-forward deployment/backend 5000:5000 -n app
+    Cria um túnel do seu localhost:5000 para o Pod backend. Permite testar a API mesmo sem Ingress.
+
+**📡 DNS Interno do Cluster**
+      
+      http://backend-service.app.svc.cluster.local:5000
+      Nome DNS interno do Service backend-service no namespace app. Usado por aplicações internas para se comunicarem diretamente com o backend.
 
 ##
 ## 5. Endereço de Acesso Esperado via Ingress
