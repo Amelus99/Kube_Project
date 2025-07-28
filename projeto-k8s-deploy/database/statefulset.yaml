@@ -1,36 +1,44 @@
-apiVersion: apps/v1
-kind: StatefulSet
+#O StatefulSet é o tipo de controlador ideal para aplicações que precisam manter dados persistentes e identidade estável, como o PostgreSQL.
+#Persistência de dados: Cada pod recebe um volume próprio via volumeClaimTemplates, garantindo que dados não sejam perdidos se o pod reiniciar.
+#Identidade estável: Os pods são nomeados de forma previsível (postgres-0, postgres-1, etc.), o que é essencial para clusters de banco ou replicação futura.
+#Headless Service (serviceName) permite que cada pod tenha um hostname DNS fixo — essencial para certas configurações de banco.
+#Ordem de criação e destruição: útil se, no futuro, quiser trabalhar com réplicas ou bancos que exigem bootstrap em ordem específica.
+
+apiVersion: apps/v1  # Versão da API do Kubernetes para recursos de controle de aplicações.
+kind: StatefulSet    # Tipo de recurso. StatefulSet é usado para aplicações com estado (stateful), como bancos de dados.
 metadata:
-  name: postgres
-  namespace: db
+  name: postgres     # Nome do StatefulSet.
+  namespace: db      # Namespace onde o recurso será criado. Aqui, é o namespace 'db'.
+
 spec:
-  serviceName: "postgres"
-  replicas: 1
+  serviceName: "postgres"  # Nome do serviço headless que garante DNS estável para cada pod (postgres-0, postgres-1, etc).
+  replicas: 1               # Número de réplicas/pods desejados. Aqui é apenas 1, suficiente para ambiente de testes.
   selector:
     matchLabels:
-      app: postgres
-  template:
+      app: postgres         # Seleciona os pods com essa label para associar ao StatefulSet.
+
+  template:                 # Template que define como os pods devem ser criados.
     metadata:
       labels:
-        app: postgres
+        app: postgres       # Rótulo (label) usado para identificar os pods.
     spec:
       containers:
-        - name: postgres
-          image: postgres:15
+        - name: postgres    # Nome do container dentro do pod.
+          image: postgres:15   # Imagem Docker do PostgreSQL versão 15.
           ports:
-            - containerPort: 5432
+            - containerPort: 5432  # Porta padrão de escuta do PostgreSQL.
           envFrom:
             - secretRef:
-                name: postgres-secret
+                name: postgres-secret  # Refere-se a um Secret contendo variáveis sensíveis como usuário e senha do banco.
           volumeMounts:
-            - name: postgres-data
-              mountPath: /var/lib/postgresql/data
-  volumeClaimTemplates:
+            - name: postgres-data         # Nome do volume a ser montado.
+              mountPath: /var/lib/postgresql/data  # Caminho onde o PostgreSQL armazena os dados.
+
+  volumeClaimTemplates:     # Define os volumes persistentes que cada réplica vai usar.
     - metadata:
-        name: postgres-data
+        name: postgres-data  # Nome da reivindicação de volume.
       spec:
-        accessModes: [ "ReadWriteOnce" ]
+        accessModes: [ "ReadWriteOnce" ]  # O volume só pode ser montado por um único nó de cada vez.
         resources:
           requests:
-            storage: 1Gi
-
+            storage: 1Gi     # Tamanho mínimo do volume solicitado. Aqui, 1 gigabyte.
