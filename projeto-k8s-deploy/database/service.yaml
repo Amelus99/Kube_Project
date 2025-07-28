@@ -1,12 +1,17 @@
-apiVersion: v1
-kind: Service
-metadata:
-  name: postgres
-  namespace: db
-spec:
-  selector:
-    app: postgres
-  ports:
-    - port: 5432
-      targetPort: 5432
+#Fornecer um ponto de acesso estável para o pod do banco de dados PostgreSQL. 
+#Mesmo que o pod reinicie ou seja substituído, o Service continua acessível via DNS
+#Encaminhar requisições da aplicação (backend) para o banco de dados sem precisar saber o IP exato do pod.
 
+apiVersion: v1                  # Versão da API do Kubernetes para recursos de rede.
+kind: Service                   # Tipo de recurso. Aqui estamos criando um Service.
+metadata:
+  name: postgres                # Nome do Service. Este nome será usado para a comunicação interna (DNS).
+  namespace: db                 # Namespace onde o recurso será criado. Aqui, o namespace 'db'.
+
+spec:
+  selector:                    # Define os pods aos quais este Service encaminhará o tráfego.
+    app: postgres              # Seleciona os pods com a label "app=postgres".
+
+  ports:                       # Define as portas expostas pelo Service.
+    - port: 5432               # Porta que o Service expõe dentro do cluster.
+      targetPort: 5432         # Porta do container/pod onde o PostgreSQL está escutando.
