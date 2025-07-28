@@ -64,11 +64,11 @@ A aplicação será acessível através do IP retornado pelo comando minikube ip
 
 - Frontend (React):
 
-       http://<IP_DO_MINIKUBE>/
+       http://meuprojeto.local/
 
 - Backend (Flask API):
 
-      http://<IP_DO_MINIKUBE>/api/
+      http://meuprojeto.local/api/
 ##
 ## Descrição Breve da Arquitetura
 A aplicação está estruturada em dois namespaces:
