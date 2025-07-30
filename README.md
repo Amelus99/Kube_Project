@@ -2,8 +2,8 @@
 
   ## 👥 Integrantes da Equipe
 
-- Samuel Araujo Cabral e Silva
-- Ariele Laiane da Silva Amaral
+- [Samuel Araujo Cabral e Silva](https://github.com/Amelus99)
+- [Ariele Laiane da Silva Amaral](https://github.com/arielelaiane2017)
 - [Maria Isabel](https://github.com/Bellsatu)
 ##
 ## 1. Objetivo do Projeto
