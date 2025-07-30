@@ -183,4 +183,4 @@ Cada componente é deployado da seguinte forma:
     | Configuração | ConfigMap + Secrets                     | DB\_HOST, senhas etc.             |
     | Ingress      | NGINX com rotas `/` e `/api`            | Acesso externo via IP             |
 
-
+[Analogias](https://github.com/Amelus99/Kube_Project/blob/main/Analogias.md)
