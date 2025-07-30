@@ -4,7 +4,7 @@
 
 - Samuel Araujo Cabral e Silva
 - Ariele Laiane da Silva Amaral
-- Maria Isabel
+- [Maria Isabel](https://github.com/Bellsatu)
 ##
 ## 1. Objetivo do Projeto
 Realizar o deploy de uma aplicação web fullstack (React no frontend, Flask no backend e PostgreSQL como banco de dados) em um cluster Kubernetes, garantindo:
